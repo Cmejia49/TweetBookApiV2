@@ -37,9 +37,10 @@ namespace TweetBookApi.Services
             return await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id == postId);
         }
 
-        public async Task<List<Post>> GetPostsAsync()
+        public async Task<List<Post>> GetPostsAsync() 
         {
-            return await _dataContext.Posts.ToListAsync();
+            return await _dataContext.Posts
+                .Include(x => x.Tags).ToListAsync();
         }
 
         public async Task<bool> UpdatePostAsync(Post postToUpdate)
@@ -64,6 +65,19 @@ namespace TweetBookApi.Services
             }
 
             return true;
+        }
+
+        public async Task<List<Tag>> GetAllTagAsync()
+        {
+            return await _dataContext.Tags.ToListAsync();
+        }
+
+        public async Task<bool> CreateTagAsync(Tag tag)
+        {
+            await _dataContext.Tags.AddAsync(tag);
+            var created = await _dataContext.SaveChangesAsync();
+
+            return created > 0;
         }
     }
 }

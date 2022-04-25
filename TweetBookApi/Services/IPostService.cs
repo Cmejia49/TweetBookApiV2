@@ -11,9 +11,12 @@ namespace TweetBookApi.Services
         Task<List<Post>> GetPostsAsync();
         Task<bool> CreatePostAsync(Post post);
         Task<Post> GetPostByIdAsync(Guid postId);
-
+        Task<List<Tag>> GetAllTagAsync();
+        Task<bool> CreateTagAsync(Tag tag);
         Task<bool> UpdatePostAsync(Post postToUpdate);
         Task<bool> DeletePostAsync(Guid postId);
         Task<bool> UserOwnPostAsync(Guid postId, string userId);
+
+
     }
 }

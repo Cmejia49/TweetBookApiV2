@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = ItegrationTests
+build_property.ProjectDir = D:\repo\TweetBookApi\ItegrationTests\

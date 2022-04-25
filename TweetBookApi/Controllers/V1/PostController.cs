@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TweetBookApi.Cache;
 using TweetBookApi.Contracts.V1;
 using TweetBookApi.Contracts.V1.Request;
 using TweetBookApi.Contracts.V1.Response;
@@ -20,15 +22,19 @@ namespace TweetBookApi.Controllers.V1
 
 
         private readonly IPostService _postService;
-        public PostsController(IPostService postService)
+        private readonly IMapper _mapper;
+        public PostsController(IPostService postService, IMapper mapper)
         {
             _postService = postService;
+            _mapper = mapper;
 
         }
         [HttpGet(ApiRoutes.Posts.GetAll)]
+        [Cached(600)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _postService.GetPostsAsync());
+            var posts = await _postService.GetPostsAsync();
+            return Ok(_mapper.Map<List<PostResponse>>(posts));
         }
         [HttpPut(ApiRoutes.Posts.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid postId, [FromBody] UpdatePostRequest request)
@@ -45,7 +51,7 @@ namespace TweetBookApi.Controllers.V1
 
             var updated = await _postService.UpdatePostAsync(post);
             if (updated)
-                return Ok(post);
+                return Ok(_mapper.Map<PostResponse>(post));
 
             return NotFound();
         }
@@ -67,6 +73,7 @@ namespace TweetBookApi.Controllers.V1
             return NotFound();
         }
         [HttpGet(ApiRoutes.Posts.Get)]
+        [Cached(600)]
         public async Task<IActionResult> Get([FromRoute] Guid postId)
         {
             var post = await _postService.GetPostByIdAsync(postId);
@@ -74,15 +81,16 @@ namespace TweetBookApi.Controllers.V1
             {
                 return NotFound();
             }
-            return Ok(post);
+            return Ok(_mapper.Map<List<PostResponse>>(post));
         }
 
         [HttpPost(ApiRoutes.Posts.Create)]
         public async Task<IActionResult> Create([FromBody] CreatePostRequest postRequest)
         {
-            var post = new Post 
+
+            var post = new Post
             {
-                Name = postRequest.Name ,
+                Name = postRequest.Name,
                 UserId = HttpContext.GetUserId()
             };
 

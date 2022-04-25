@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "uGxJ4AByX4yNhanAeqqS0g1bflzzJHizetSM9PLGsAu5LnNXObyTcDD+uS11ROD20h3GkEnKGUg9KXCocprm8g==",
+  "success": true,
+  "projectFilePath": "D:\\repo\\TweetBookApi\\Tweetbook.Contracts\\Tweetbook.Contracts.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\christopher\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -18,5 +18,7 @@ namespace TweetBookApi.Domain
         [ForeignKey(nameof(UserId))]
 
         public IdentityUser User { get; set; }
+
+        public virtual ICollection<Tag> Tags { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TweetBookApi.Filters;
 using TweetBookApi.Options;
+using TweetBookApi.Services;
 
 namespace TweetBookApi.Installer
 {
@@ -19,7 +22,22 @@ namespace TweetBookApi.Installer
             var jwtSettings = new JwtSettings();
             configuration.Bind(nameof(JwtSettings), jwtSettings);
             services.AddSingleton(jwtSettings); //Make it accessible wherever its requested
-            // Adding Authentication  
+
+
+            // Adding Authentication
+            // 
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = true,
+                ValidateLifetime = true
+            };
+
+            services.AddSingleton(tokenValidationParameters);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,12 +50,12 @@ namespace TweetBookApi.Installer
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-                };
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
+
+            services.AddAuthorization(option => 
+            {
+                option.AddPolicy("TagViewer", builder => builder.RequireClaim("tags.view", "true"));
             });
 
             services.AddSwaggerGen(x =>
@@ -68,6 +86,13 @@ namespace TweetBookApi.Installer
                     }
                 });
             });
+
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddMvc(options => 
+            {
+                options.EnableEndpointRouting = false;
+                options.Filters.Add<ValidationFilter>();
+            }).AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
     }
 }

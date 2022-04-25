@@ -1,0 +1,4 @@
+is_global = true
+build_property.RefitInternalNamespace = Tweetbook.Sdk
+build_property.RootNamespace = Tweetbook.Sdk
+build_property.ProjectDir = D:\repo\TweetBookApi\Tweetbook.Sdk\

@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using TweetBookApi.Data;
@@ -35,9 +36,13 @@ namespace TweetBookApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<IIdentityService, IdentityService>();
             services.InstallServicesInAssembly(Configuration);
-           
+            services.AddAutoMapper(typeof(Startup));
+            services.AddHttpClient("localhost").ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+
+            });
 
         }
 

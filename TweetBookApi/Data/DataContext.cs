@@ -12,6 +12,8 @@ namespace TweetBookApi.Data
     public class DataContext:IdentityDbContext<IdentityUser>
     {
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DataContext(DbContextOptions<DataContext> option) :base(option)
         {
 
